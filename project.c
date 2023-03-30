@@ -417,6 +417,7 @@ static void update_score()
 int main(void)
 {
     // LCD init
+    volatile int delay_count;
     init_spim0();
     init_lcd();
     clear_screen();
@@ -474,5 +475,8 @@ int main(void)
             score[1] = 0;
             init_game();
         }
+
+        for (delay_count = 5; delay_count != 0; --delay_count)
+            ; // delay loop
     }
 }
