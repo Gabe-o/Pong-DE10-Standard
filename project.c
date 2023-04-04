@@ -407,6 +407,12 @@ static void update_score()
 
     int lookUpTable[10] = {0x3F, 0x6, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x7, 0x7F, 0x67};
 
+    if (score[0] > 99 || score[1] > 99)
+    {
+        score[0] = 0;
+        score[1] = 0;
+    }
+
     // Updating hex display
     *((char *)hex_ptr) = lookUpTable[score[0] % 10];
     *((char *)hex_ptr + 1) = lookUpTable[score[0] / 10];
