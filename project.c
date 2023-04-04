@@ -98,21 +98,6 @@ void set_mode(int mode)
 #define SCREEN_HEIGHT 64
 
 char frame_buffer[8][128];
-/*
- * Clears the entire LCD display.
- */
-void clear_screen(void)
-{
-    int i, j;
-    for (i = 0; i < FRAME_HEIGHT; i++)
-    {
-        for (j = 0; j < FRAME_WIDTH; j++)
-        {
-            frame_buffer[i][j] = 0;
-        }
-    }
-    refresh_buffer();
-}
 
 /*
  * Writes the contents of the frame buffer to the LCD display.
@@ -132,6 +117,22 @@ void refresh_buffer(void)
         for (j = 0; j < FRAME_WIDTH; j++)
             spim_write(frame_buffer[i][j]);
     }
+}
+
+/*
+ * Clears the entire LCD display.
+ */
+void clear_screen(void)
+{
+    int i, j;
+    for (i = 0; i < FRAME_HEIGHT; i++)
+    {
+        for (j = 0; j < FRAME_WIDTH; j++)
+        {
+            frame_buffer[i][j] = 0;
+        }
+    }
+    refresh_buffer();
 }
 
 /*
@@ -395,11 +396,6 @@ static void move_ball()
     }
 }
 
-static void move_paddle(int p, int d)
-{
-    paddle[p].y = d / 4096 * 110;
-}
-
 static void update_score()
 {
     volatile int *hex_ptr = (int *)HEX3_HEX0_BASE;
@@ -433,6 +429,8 @@ int main(void)
     *(ADC_BASE_ptr) = 0;                 // write anything to channel 0 to update ADC
     adc1 = (*(ADC_BASE_ptr)&mask);       // Read current ADC value (channel 0)
     adc2 = (*(ADC_BASE_ptr + 1) & mask); // Read current ADC value (channel 1)
+    printf(adc1 + "\n");
+    printf(adc2);
 
     // Timer init
     // initialize timer for 0.017s interval
