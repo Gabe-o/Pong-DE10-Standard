@@ -194,7 +194,7 @@ void LCD_line(int x, int y, int length, int color, int vert)
 void LCD_rect(int x1, int y1, int width, int height, int color, int fill)
 {
     int x2 = x1 + width;
-    int y2 = y1 + width;
+    int y2 = y1 + height;
     int i;
     if (!fill)
     {
@@ -239,14 +239,14 @@ static void init_game()
     ball.dy = 1;
     ball.dx = 1;
 
-    paddle[0].x = 1;
-    paddle[0].y = adc1 / 4096 * 110;
-    paddle[0].w = 2;
+    paddle[0].x = 0;
+    paddle[0].y = 0;
+    paddle[0].w = 6;
     paddle[0].h = 10;
 
-    paddle[1].x = SCREEN_WIDTH - 1 - 2;
-    paddle[1].y = adc2 / 4096 * 110;
-    paddle[1].w = 2;
+    paddle[1].x = SCREEN_WIDTH - 1 - 6;
+    paddle[1].y = 0;
+    paddle[1].w = 6;
     paddle[1].h = 10;
 }
 
@@ -311,14 +311,14 @@ static void move_ball()
             init_game();
         }
 
-        if (ball.x > SCREEN_WIDTH)
+        if (ball.x > SCREEN_WIDTH - 2)
         {
             score[0] += 1;
             init_game();
         }
 
         // If ball hits top/bottom of screen flip y movement vector
-        if (ball.y < 0 || ball.y > SCREEN_HEIGHT)
+        if (ball.y < 0 || ball.y > SCREEN_HEIGHT - ball.h)
         {
             ball.dy = -ball.dy;
         }
@@ -429,13 +429,11 @@ int main(void)
     *(ADC_BASE_ptr) = 0;                 // write anything to channel 0 to update ADC
     adc1 = (*(ADC_BASE_ptr)&mask);       // Read current ADC value (channel 0)
     adc2 = (*(ADC_BASE_ptr + 1) & mask); // Read current ADC value (channel 1)
-    printf(adc1 + "\n");
-    printf(adc2);
 
     // Timer init
     // initialize timer for 0.017s interval
     // assumes 100 MHz rate
-    timer_1->load = 1700000;
+    timer_1->load = 1;
 
     // start timer for continuous counting
     // 3 is (0b011) for control
@@ -450,8 +448,10 @@ int main(void)
         *(ADC_BASE_ptr) = 0;                 // write anything to channel 0 to update ADC
         adc1 = (*(ADC_BASE_ptr)&mask);       // Read current ADC value (channel 0)
         adc2 = (*(ADC_BASE_ptr + 1) & mask); // Read current ADC value (channel 1)
-        paddle[0].y = adc1 / 4096 * 110;     // Updating paddle y pos
-        paddle[1].y = adc2 / 4096 * 110;
+        paddle[0].y = (adc1 * 54) / 4096;
+        paddle[1].y = (adc2 * 54) / 4096;
+	printf("%d\n", paddle[0].y);
+    	printf("%d\n", paddle[1].y);
 
         // UPDATEING BALL POSITION
         move_ball();
@@ -480,7 +480,6 @@ int main(void)
             init_game();
         }
 
-        for (delay_count = 5; delay_count != 0; --delay_count)
-            ; // delay loop
+        /*for (delay_count = 10; delay_count != 0; --delay_count); // delay loop */
     }
 }
